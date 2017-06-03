@@ -2,30 +2,21 @@ package com.company;
 import java.util.*;
 
 /**
- * Created by Mati on 2017-06-01.
+ * Directed, weighted grapg representation
  */
 public class Graph {
     private int nrOfVertices;
     private int nrOfEdges;
-    private LinkedList<Vertex> verticesList;
+    private final LinkedList<Vertex> verticesList;
 
-    public Graph(){
+     Graph(){
         nrOfVertices=0;
         nrOfEdges=0;
         verticesList=new LinkedList<>();
     }
 
-    public void addEdge(int v, int u, int weight){
-        if (u<0 || u>nrOfVertices || v<0 || v>nrOfVertices || weight<1)
-            throw new IllegalArgumentException();
-        if(!contains(v))
-            add("Not defined");
-        Vertex ver = get(v);
-        ver.addEdge(u,weight);
-        nrOfEdges++;
-    }
 
-    public void addEdge(String v, String u, int weight){
+     void addEdge(String v, String u, int weight){
         Vertex ver1,ver2;
         if (weight<1)
             throw new IllegalArgumentException();
@@ -45,32 +36,28 @@ public class Graph {
         nrOfEdges++;
     }
 
-    public Vertex add(String name){
+     Vertex add(String name){
         Vertex vertex=new Vertex(nrOfVertices,name);
         verticesList.add(vertex);
         nrOfVertices++;
         return vertex;
     }
 
-    public boolean contains(int v){
-        if (validateVertex(v))
-           return true;
-        return false;
+    private boolean contains(int v){
+        return validateVertex(v);
     }
 
-    public boolean contains(String s){
-        if (validateVertex(s))
-            return true;
-        return false;
+    private boolean contains(String s) {
+        return validateVertex(s);
     }
 
-    public Vertex get(int nr){
+    private Vertex get(int nr){
         if (validateVertex(nr))
             return verticesList.get(nr);
         return null;
     }
 
-    public Vertex get(String s){
+    private Vertex get(String s){
         for (Vertex v : verticesList)
             if (v.getData().equals(s))
                 return v;
@@ -78,9 +65,7 @@ public class Graph {
     }
 
     private boolean validateVertex(int v){
-        if (v<0 || v>=nrOfVertices)
-            return false;
-        return true;
+        return (v<0 || v>=nrOfVertices);
     }
 
     private boolean validateVertex(String s){
@@ -90,27 +75,8 @@ public class Graph {
         return false;
     }
 
-    public Vertex remove(int nr){
-        for (Vertex ver : verticesList) {
-            if (ver.getNr() == nr) {
-                verticesList.remove(ver);
-                nrOfVertices--;
-                nrOfEdges-=ver.getEdges();
-                return ver;
-            }
-        }
-         return null;
-    }
 
-    public void removeEdge(int v,int u){
-        Vertex ver = get(v);
-        if (ver==null)
-            return;
-        ver.removeEdge(u);
-        nrOfEdges--;
-    }
-
-    public DijkstraAlgorithm shortestPath(int begin, int end){
+    private DijkstraAlgorithm shortestPath(int begin, int end){
         if (!validateVertex(begin) || !validateVertex(end))
             throw new IllegalArgumentException();
         DijkstraAlgorithm dijkstraAlgorithm = new DijkstraAlgorithm(this);
@@ -119,12 +85,8 @@ public class Graph {
 
     }
 
-    public void printShortestPath(int begin, int end){
-        DijkstraAlgorithm da = shortestPath(begin,end);
-        System.out.print(da.getMinPath(begin, end));
-    }
 
-    public void printShortestPath(String begin, String end){
+    void printShortestPath(String begin, String end){
         DijkstraAlgorithm da = shortestPath(begin,end);
         int from=get(begin).getNr();
         int to=get(end).getNr();
@@ -132,7 +94,7 @@ public class Graph {
     }
 
 
-    public DijkstraAlgorithm shortestPath (String begin, String end){
+    private DijkstraAlgorithm shortestPath (String begin, String end){
         if (!validateVertex(begin) || !validateVertex(end))
             throw new IllegalArgumentException();
         int from=get(begin).getNr();
@@ -140,7 +102,7 @@ public class Graph {
         return shortestPath(from,to);
     }
 
-    public void allReachable(int nr){
+    private void allReachable(int nr){
         DijkstraAlgorithm da = shortestPath(nr,nrOfVertices-1-nr);
         System.out.println("\n\n Wszystkie miasta osiągalne z "+verticesList.get(nr)+":");
         for (Vertex x : verticesList){
@@ -149,7 +111,7 @@ public class Graph {
         }
     }
 
-    public void allReachable(String begin){
+     void allReachable(String begin){
         int from = get(begin).getNr();
         allReachable(from);
     }
@@ -165,46 +127,32 @@ public class Graph {
     }
 
     private class Vertex implements Comparable<Vertex>{
-        private int nr;
-        private String data;
+        private final int nr;
+        private final String data;
         private int edges;
         private int DijkstraWeight;
-        private TreeMap<Integer, Integer> adj;
+        private final TreeMap<Integer, Integer> adj;
 
-        public Vertex(int nr,String data){
+         Vertex(int nr,String data){
             this.nr=nr;
             this.data=data;
             edges=0;
             adj=new TreeMap<>();
         }
 
-        public void addEdge(int vertex, int weight){
+        void addEdge(int vertex, int weight){
             if (vertex<0 || weight<1) throw new IllegalArgumentException();
             adj.put(vertex,weight);
             edges++;
         }
 
-        public void removeEdge(int u){
-            adj.remove(u);
-        }
 
-        public boolean isEdge(int vertex){
-            return adj.get(vertex)!=null;
-        }
 
-        public int getWeight(int vertex){
-            return adj.get(vertex);
-        }
-
-        public String getName(){
-            return data;
-        }
-
-        public int getDijkstraWeight() {
+         int getDijkstraWeight() {
             return DijkstraWeight;
         }
 
-        public void setDijkstraWeight(int dijkstraWeight) {
+         void setDijkstraWeight(int dijkstraWeight) {
             DijkstraWeight = dijkstraWeight;
         }
 
@@ -221,20 +169,13 @@ public class Graph {
 
         @Override
         public String toString(){
-            StringBuilder stringBuilder=new StringBuilder();
-            stringBuilder.append(" Miasto: ");
-            stringBuilder.append(data);
-            return stringBuilder.toString();
+            String s=" Miasto: "+data;
+            return s;
         }
 
-        public String getVertexNr(){
-            StringBuilder stringBuilder=new StringBuilder();
-            stringBuilder.append("\nNr wierzchołka: ");
-            stringBuilder.append(nr);
-            return stringBuilder.toString();
-        }
 
-        public String getAdjList() {
+
+         String getAdjList() {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("\n Możemy się dostać bezpośrednio do: \n");
             adj.forEach((key,value)->{
@@ -247,11 +188,11 @@ public class Graph {
             return stringBuilder.toString();
         }
 
-        public int getNr() {
+         int getNr() {
             return nr;
         }
 
-        public String getData() {
+         String getData() {
             return data;
         }
 
@@ -259,22 +200,20 @@ public class Graph {
             return edges;
         }
 
-        public TreeMap<Integer, Integer> getAdj() {
+         TreeMap<Integer, Integer> getAdj() {
             return adj;
         }
     }
 
     private class DijkstraAlgorithm{
-        private Graph graph;
-        private PriorityQueue<Vertex> queue;
-        private int [] pred;
-        private ArrayList<Integer> visited;
+        private final Graph graph;
+        private final PriorityQueue<Vertex> queue;
+        private final int [] pred;
 
-        public DijkstraAlgorithm(Graph g){
+         DijkstraAlgorithm(Graph g){
             graph=g;
             queue=new PriorityQueue<>();
             pred=new int[graph.nrOfVertices];
-            visited=new ArrayList<>();
         }
 
         private  void initializeSingleSource(int s){
@@ -295,10 +234,9 @@ public class Graph {
             }
         }
 
-        public void Dijkstra(Vertex v){
+         void Dijkstra(Vertex v){
             initializeSingleSource(v.getNr());
-            for (Vertex vex : verticesList)
-            queue.add(vex);
+            queue.addAll(verticesList);
             while (!queue.isEmpty()){
                 Vertex vertex=queue.poll();
                 for (Map.Entry<Integer,Integer> entry : vertex.getAdj().entrySet()){
@@ -310,7 +248,7 @@ public class Graph {
 
         }
 
-        public String getMinPath(int begin, int end){
+         String getMinPath(int begin, int end){
             StringBuilder s=new StringBuilder();
             s=shortestPath(begin,end,s);
             s.append("Jesteś u celu");
